@@ -2,8 +2,14 @@ package view;
 
 import javax.swing.JDialog;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.Connection;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import model.DAO;
 
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -17,7 +23,14 @@ import javax.swing.ImageIcon;
 public class Login extends JDialog {
 	private JPasswordField inputSenha;
 	private JTextField inputLogin;
+	
 	public Login() {
+		addWindowListener(new WindowAdapter(){
+			public void windowActivate(WindowEvent e) {
+				statusConexaoBanco();
+			}
+		});
+		
 		setTitle("Login");
 		setResizable(false);
 		setBounds(new Rectangle(0, 0, 450, 321));
@@ -58,6 +71,30 @@ public class Login extends JDialog {
 		imgDatabase.setBounds(24, 191, 54, 66);
 		getContentPane().add(imgDatabase);
 	}
+	
+	DAO dao = new DAO();
+	
+	private void statusConexaoBanco() {
+		try {
+			Connection conexaoBanco = dao.conectar();
+			
+			if(conexaoBanco == null) {
+				//Escolher a imagem para quando não ha conexão
+				imgDatabase.setIcon(new ImageIcon (Login.class.getResource("/img/databaseOff.png")));
+			}
+			
+			else {
+				//Trocar a imagem se houve conexão
+				imgDatabase.setIcon(new ImageIcon (Login.class.getResource("/img/databaseOn.png")));
+			}
+		
+		conexaoBanco.close();
+	}
+	
+	catch(Exception e) {
+		System.out.println(e);
+	}
+}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

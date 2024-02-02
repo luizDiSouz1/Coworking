@@ -13,6 +13,7 @@ import javax.swing.SwingConstants;
 
 public class Sobre extends JDialog  {
 	public Sobre() {
+		setTitle("Sobre");
 		setBounds(new Rectangle(0, 0, 540, 423));
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
