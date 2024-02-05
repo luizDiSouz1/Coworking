@@ -1,32 +1,29 @@
 package view;
 
-import javax.swing.JDialog;
+import java.awt.Cursor;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import model.DAO;
 
-import java.awt.EventQueue;
-import java.awt.Font;
-import javax.swing.JPasswordField;
-import java.awt.Rectangle;
-import javax.swing.JFormattedTextField;
-import javax.swing.JButton;
-import java.awt.Cursor;
-import javax.swing.ImageIcon;
-
 public class Login extends JDialog {
-	private JPasswordField inputSenha;
-	private JTextField inputLogin;
 	
 	public Login() {
+		
 		addWindowListener(new WindowAdapter(){
-			public void windowActivate(WindowEvent e) {
+			public void windowActivated(WindowEvent e) {
 				statusConexaoBanco();
 			}
 		});
@@ -47,11 +44,11 @@ public class Login extends JDialog {
 		txtSenha.setBounds(114, 118, 43, 24);
 		getContentPane().add(txtSenha);
 		
-		inputSenha = new JPasswordField();
+		JPasswordField inputSenha = new JPasswordField();
 		inputSenha.setBounds(167, 121, 110, 20);
 		getContentPane().add(inputSenha);
 		
-		inputLogin = new JTextField();
+		JTextField inputLogin = new JTextField();
 		inputLogin.setBounds(167, 75, 110, 20);
 		getContentPane().add(inputLogin);
 		inputLogin.setColumns(10);
@@ -66,13 +63,14 @@ public class Login extends JDialog {
 		tituloLogin.setBounds(173, 11, 116, 24);
 		getContentPane().add(tituloLogin);
 		
-		JLabel imgDatabase = new JLabel("");
+		imgDatabase = new JLabel("");
 		imgDatabase.setIcon(new ImageIcon(Login.class.getResource("/img/databaseOff.png")));
 		imgDatabase.setBounds(24, 191, 54, 66);
 		getContentPane().add(imgDatabase);
 	}
 	
-	DAO dao = new DAO();
+	 DAO dao = new DAO();
+	 private JLabel imgDatabase;
 	
 	private void statusConexaoBanco() {
 		try {
@@ -95,7 +93,22 @@ public class Login extends JDialog {
 		System.out.println(e);
 	}
 }
-
+	
+	private void logar() {
+		String read = "select * from funcionario where login=? and senha=md5(?)";
+	
+	try {
+		
+	}
+	
+	catch(Exception e) {
+		System.out.println(e);
+		
+	}
+	
+	}	
+	
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		EventQueue.invokeLater(new Runnable(){
@@ -113,4 +126,4 @@ public class Login extends JDialog {
 	
 		});
 	}
-}
+} 
