@@ -5,9 +5,13 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -19,6 +23,8 @@ import javax.swing.JTextField;
 import model.DAO;
 
 public class Login extends JDialog {
+	private JTextField inputLogin;
+	private JPasswordField inputSenha;
 	
 	public Login() {
 		
@@ -44,11 +50,11 @@ public class Login extends JDialog {
 		txtSenha.setBounds(114, 118, 43, 24);
 		getContentPane().add(txtSenha);
 		
-		JPasswordField inputSenha = new JPasswordField();
+		inputSenha = new JPasswordField();
 		inputSenha.setBounds(167, 121, 110, 20);
 		getContentPane().add(inputSenha);
 		
-		JTextField inputLogin = new JTextField();
+		inputLogin = new JTextField();
 		inputLogin.setBounds(167, 75, 110, 20);
 		getContentPane().add(inputLogin);
 		inputLogin.setColumns(10);
@@ -58,6 +64,12 @@ public class Login extends JDialog {
 		btnLogin.setBounds(178, 191, 84, 20);
 		getContentPane().add(btnLogin);
 		
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				logar();
+			}
+		});
+
 		JLabel tituloLogin = new JLabel("Acessar conta");
 		tituloLogin.setFont(new Font("Arial Black", Font.PLAIN, 14));
 		tituloLogin.setBounds(173, 11, 116, 24);
@@ -69,8 +81,8 @@ public class Login extends JDialog {
 		getContentPane().add(imgDatabase);
 	}
 	
-	 DAO dao = new DAO();
-	 private JLabel imgDatabase;
+	DAO dao = new DAO();
+	private JLabel imgDatabase;
 	
 	private void statusConexaoBanco() {
 		try {
@@ -98,7 +110,25 @@ public class Login extends JDialog {
 		String read = "select * from funcionario where login=? and senha=md5(?)";
 	
 	try {
+		//Estabelecer a conexão
+		Connection conexaoBanco = dao.conectar();
 		
+		//Preparar a execução do script SQL
+		PreparedStatement executarSQL = conexaoBanco.prepareStatement(read);
+		
+		//Atribuir valores de login e senha
+		//substituir as interregações ? ? pelo conteúdo da caixa de texto(input)
+		executarSQL.setString(1, inputLogin.getText());
+		executarSQL.setString(2, inputSenha.getText());
+		
+		//Executar os comandos SQL e de acordo
+		ResultSet resultadoExecucao = executarSQL.executeQuery();
+		
+		//validação do funcionário(autenticação)
+		//resultadoExecucao.next() significa que o login e a senha existem, ou seja, correspondem
+		
+		if(resultadoExecucao.next());
+			System.out.println("Você logou!");
 	}
 	
 	catch(Exception e) {
@@ -106,7 +136,7 @@ public class Login extends JDialog {
 		
 	}
 	
-	}	
+}	
 	
 	
 	public static void main(String[] args) {
