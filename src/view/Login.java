@@ -72,7 +72,7 @@ public class Login extends JDialog {
 
 		JLabel tituloLogin = new JLabel("Acessar conta");
 		tituloLogin.setFont(new Font("Arial Black", Font.PLAIN, 14));
-		tituloLogin.setBounds(173, 11, 116, 24);
+		tituloLogin.setBounds(173, 11, 115, 24);
 		getContentPane().add(tituloLogin);
 		
 		imgDatabase = new JLabel("");
@@ -127,8 +127,15 @@ public class Login extends JDialog {
 		//validação do funcionário(autenticação)
 		//resultadoExecucao.next() significa que o login e a senha existem, ou seja, correspondem
 		
-		if(resultadoExecucao.next());
-			System.out.println("Você logou!");
+		if(resultadoExecucao.next()){
+			Home home = new Home();
+			
+			home.setVisible(true);
+		}
+		
+		else {
+			System.out.println("Login e/ou senha inválidos");
+		}
 	}
 	
 	catch(Exception e) {
