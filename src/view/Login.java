@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -108,44 +109,71 @@ public class Login extends JDialog {
 	
 	private void logar() {
 		String read = "select * from funcionario where login=? and senha=md5(?)";
+		
+		//validacao do login do usuario
+		if(inputLogin.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null,"Login do usuário obrigatório!");
+			inputLogin.requestFocus();
+		}
+		
+		else if(inputSenha.getPassword().length == 0) {
+			JOptionPane.showMessageDialog(null,"Senha do usuário obrigatoria!");
+			inputSenha.requestFocus();
+		}
+		
+		
+		else {	
 	
-	try {
-		//Estabelecer a conexão
-		Connection conexaoBanco = dao.conectar();
-		
-		//Preparar a execução do script SQL
-		PreparedStatement executarSQL = conexaoBanco.prepareStatement(read);
-		
-		//Atribuir valores de login e senha
-		//substituir as interregações ? ? pelo conteúdo da caixa de texto(input)
-		executarSQL.setString(1, inputLogin.getText());
-		executarSQL.setString(2, inputSenha.getText());
-		
-		//Executar os comandos SQL e de acordo
-		ResultSet resultadoExecucao = executarSQL.executeQuery();
-		
-		//validação do funcionário(autenticação)
-		//resultadoExecucao.next() significa que o login e a senha existem, ou seja, correspondem
-		
-		if(resultadoExecucao.next()){
-			Home home = new Home();
+		try {
+			//Estabelecer a conexão
+			Connection conexaoBanco = dao.conectar();
 			
-			home.setVisible(true);
+			//Preparar a execução do script SQL
+			PreparedStatement executarSQL = conexaoBanco.prepareStatement(read);
+			
+			//Atribuir valores de login e senha
+			//substituir as interregações ? ? pelo conteúdo da caixa de texto(input)
+			executarSQL.setString(1, inputLogin.getText());
+			executarSQL.setString(2, inputSenha.getText());
+			
+			//Executar os comandos SQL e de acordo
+			ResultSet resultadoExecucao = executarSQL.executeQuery();
+			
+			//validação do funcionário(autenticação)
+			//resultadoExecucao.next() significa que o login e a senha existem, ou seja, correspondem
+			
+			if(resultadoExecucao.next()){
+				Home home = new Home();
+				
+				home.setVisible(true);
+				
+				//fechar a janela de login assim que a janela HOME abrir automaticamente
+				
+				dispose();
+			}
+			
+			else {
+				//criar um alerta (pop-up) que informe ao usuário que login e/ou senha estão invalidos
+				
+				JOptionPane.showInternalMessageDialog(null, "usuarios e/ou senha incorretas");
+				inputLogin.setText(null);
+				inputSenha.setText(null);
+				inputLogin.requestFocus();
+			}
+			
+			
+			conexaoBanco.close();
 		}
-		
-		else {
-			System.out.println("Login e/ou senha inválidos");
-		}
-	}
 	
-	catch(Exception e) {
-		System.out.println(e);
+		
+		catch(Exception e) {
+			System.out.println(e);
 		
 	}
-	
+  }
 }	
 	
-	
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		EventQueue.invokeLater(new Runnable(){
