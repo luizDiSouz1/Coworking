@@ -12,13 +12,29 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Date;
+import java.text.DateFormat;
 import java.awt.event.ActionEvent;
 import java.awt.Cursor;
+import javax.swing.JPanel;
 
 public class Home extends JDialog{
 	private JButton btnUser;
+	public JPanel panelUsuario;
+	public JLabel txtUsuarioLogado;
+	JLabel txtData;
 	
 	public Home() {
+		addWindowListener(new WindowAdapter(){
+			public void windowActivated(WindowEvent e) {
+				Date dataSistema = new Date();
+				DateFormat formatadorData = DateFormat.getDateInstance(DateFormat.FULL);
+				txtData.setText(formatadorData.format(dataSistema));
+			}
+		});
+		
 		setTitle("Home");
 		setBounds(new Rectangle(0, 0, 540, 423));
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -27,7 +43,7 @@ public class Home extends JDialog{
 		getContentPane().setFont(new Font("Source Code Pro Medium", Font.BOLD, 14));
 		getContentPane().setLayout(null);
 		
-		btnUser = new JButton("Funcionarios");
+		btnUser = new JButton("");
 		btnUser.setBorderPainted(false);
 		btnUser.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnUser.setVerifyInputWhenFocusTarget(false);
@@ -67,6 +83,19 @@ public class Home extends JDialog{
 		btnReserve.setIcon(new ImageIcon(Home.class.getResource("/img/reserve.png")));
 		btnReserve.setBounds(350, 40, 98, 88);
 		getContentPane().add(btnReserve);
+		
+		panelUsuario = new JPanel();
+		panelUsuario.setBounds(0, 258, 511, 60);
+		getContentPane().add(panelUsuario);
+		panelUsuario.setLayout(null);
+		
+		txtUsuarioLogado = new JLabel("");
+		txtUsuarioLogado.setBounds(10, 11, 129, 24);
+		panelUsuario.add(txtUsuarioLogado);
+		
+		txtData = new JLabel("");
+		txtData.setBounds(195, 16, 285, 19);
+		panelUsuario.add(txtData);
 		
 		btnReserve.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 	{
