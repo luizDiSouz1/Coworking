@@ -3,19 +3,24 @@ package view;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import model.DAO;
+
 import javax.swing.JPasswordField;
 import javax.swing.ImageIcon;
 import java.awt.Cursor;
+import javax.swing.JComboBox;
 
 public class Funcionarios extends JDialog{
 	private JTextField inputNome;
 	private JTextField inputLogin;
 	private JTextField inputEmail;
-	private JTextField inputPerfil;
 	private JPasswordField inputSenha;
 	
 	public Funcionarios() {
@@ -60,11 +65,6 @@ public class Funcionarios extends JDialog{
 		getContentPane().add(inputEmail);
 		inputEmail.setColumns(10);
 		
-		inputPerfil = new JTextField();
-		inputPerfil.setBounds(336, 247, 96, 20);
-		getContentPane().add(inputPerfil);
-		inputPerfil.setColumns(10);
-		
 		inputSenha = new JPasswordField();
 		inputSenha.setBounds(336, 150, 96, 20);
 		getContentPane().add(inputSenha);
@@ -86,7 +86,42 @@ public class Funcionarios extends JDialog{
 		imgDelete.setIcon(new ImageIcon(Funcionarios.class.getResource("/img/delete.png")));
 		imgDelete.setBounds(397, 317, 64, 56);
 		getContentPane().add(imgDelete);
+		
+		inputPerfil = new JComboBox();
+		inputPerfil.setBounds(325, 246, 119, 22);
+		getContentPane().add(inputPerfil);
 	}
+	
+	DAO dao = new DAO();
+	private JComboBox inputPerfil;
+	
+	
+	private void adicionarFuncionaria() {
+		String create = "insert into funcionario(nomeFunc, login, senha, perfil, email) values(?, ?, md5(?), ?, ?);";
+		
+		
+		try {
+			//Estabelecer a conexão
+			Connection conexaoBanco = dao.conectar();
+			
+			//preparar a execucao do script SQL
+			PreparedStatement executarSQL = conexaoBanco.prepareStatement(create);
+			
+			//substituir os pontos de interrogação pelo conteudo das caixas de texto(inputs)
+			executarSQL.setString(1, inputNome.getText());
+			executarSQL.setString(2, inputLogin.getText());
+			executarSQL.setString(3, inputSenha.getText());
+			//trocar o componente do perfil
+			
+			executarSQL.setString(5, inputEmail.getText());
+			
+		}
+		
+		catch (Exception e) {
+			
+		}
+	}
+	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
