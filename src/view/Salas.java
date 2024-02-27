@@ -115,7 +115,7 @@ public class Salas extends JDialog {
 
 		tblSalas.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				//setarCaixasTexto();
+				setarCaixasTexto();
 			}
 		});
 
@@ -135,17 +135,17 @@ public class Salas extends JDialog {
 		JLabel IDSala = new JLabel("ID:");
 		IDSala.setBounds(446, 58, 15, 14);
 		getContentPane().add(IDSala);
-
-		inputID = new JTextField();
-		inputID.setEnabled(false);
-		inputID.setBounds(464, 55, 46, 20);
-		getContentPane().add(inputID);
-		inputID.setColumns(10);
 		
 		inputCategoria = new JComboBox();
 		inputCategoria.setModel(new DefaultComboBoxModel(new String[] {"", "Sala de reunião", "Sala de conferência", "Espaço de eventos", "Escritório privado"}));
 		inputCategoria.setBounds(74, 50, 362, 22);
 		getContentPane().add(inputCategoria);
+		
+		inputCategoria.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				buscarSalaNaTabela();
+			}
+		});
 		
 		inputCod = new JComboBox();
 		inputCod.setModel(new DefaultComboBoxModel(new String[] {"", "REU", "CONF", "EVENT", "PRIVE"}));
@@ -169,31 +169,40 @@ public class Salas extends JDialog {
 	public JButton btnUpdate;
 	public JButton btnDelete;
 	private JTable tblSalas;
-	private JTextField inputID;
 	private JComboBox inputCategoria;
 	private JComboBox inputCod;
 	private JComboBox inputAndar;
 	private JTextField inputNum;
 
-	/* private void adicionarFuncionario() {
-		String create = "insert into funcionario (nomeFunc, login, senha, perfil, email) values (?, ?, md5(?), ?, ?)";
+	 private void adicionarSala() {
+		String create = "insert into salas (andarSala, numeroSala, tipoSala, codigoSala, ocupacaoSala) values (?, ?, ?, ?, ?);";
 		
-		if(inputNome.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null,"Nome do usuário obrigatório!");
-			inputNome.requestFocus();
+		// Validação da categoria (tipo) da sala
+		if(inputCategoria.getSelectedItem().equals("")) {
+			JOptionPane.showMessageDialog(null,"Categoria da sala obrigatória!");
+			inputCategoria.requestFocus();
+		}
+		// validação do código de sala
+		else if(inputCod.getSelectedItem().equals("")) {
+			JOptionPane.showMessageDialog(null,"Código da sala obrigatório!");
+			inputCod.requestFocus();
 		}
 		
-		else if(inputLogin.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null,"Login do usuário obrigatoria!");
-			inputLogin.requestFocus();
+		// Validação do andar da sala
+		else if(inputAndar.getSelectedItem().equals("")) {
+			JOptionPane.showMessageDialog(null,"Andar da sala obrigatório!");
+			inputAndar.requestFocus();
 		}
 		
-		else if(inputSenha.getPassword().length == 0) {
-			JOptionPane.showMessageDialog(null,"Senha do usuário obrigatoria!");
-			inputSenha.requestFocus();
+		// Validação do número da sala
+		else if(inputNum.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null,"número da sala obrigatório!");
+			inputOcup.requestFocus();
 		}
+		
+		// Validação da ocupação máxima da sala
 		else if(inputOcup.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null,"email do usuário é obrigatorio!");
+			JOptionPane.showMessageDialog(null,"Ocupação máxima obrigatória!");
 			inputOcup.requestFocus();
 		}
 		
@@ -204,22 +213,22 @@ public class Salas extends JDialog {
 					PreparedStatement executarSQL = conexaoBanco.prepareStatement(create);
 					// Substituir os pontos de interrogação pelo conteudo das caixas de texto
 					// (inputs)
-					executarSQL.setString(1, inputNome.getText());
-					executarSQL.setString(2, inputLogin.getText());
-					executarSQL.setString(3, inputSenha.getText());
-					executarSQL.setString(4, inputPerfil.getSelectedItem().toString());
+					executarSQL.setString(1, inputAndar.getSelectedItem().toString());
+					executarSQL.setString(2, inputNum.getText());
+					executarSQL.setString(3, inputCategoria.getSelectedItem().toString());
+					executarSQL.setString(4, inputCod.getSelectedItem().toString());
 					executarSQL.setString(5, inputOcup.getText());
 					
 					
 					// Executar os comandos SQL e inserir o funcionario no banco de dados
 					executarSQL.executeUpdate();
-					JOptionPane.showMessageDialog(null, "Usuario cadstrado com sucesso");
+					JOptionPane.showMessageDialog(null, "Sala cadstrada com sucesso");
 					limparCampos();
 					conexaoBanco.close();
 				}
 		
 				catch (SQLIntegrityConstraintViolationException error) {
-					JOptionPane.showMessageDialog(null, "Login em uso. \nEscolha outro nome de usuário");
+					JOptionPane.showMessageDialog(null, "");
 					limparCampos();
 				} catch (Exception e) {
 					System.out.println(e);
@@ -234,13 +243,46 @@ public class Salas extends JDialog {
 
 		int setarLinha = tblSalas.getSelectedRow();
 
-		inputNome.setText(tblSalas.getModel().getValueAt(setarLinha, 1).toString());
-		inputID.setText(tblSalas.getModel().getValueAt(setarLinha, 0).toString());
+		
+		inputNum.setText(tblSalas.getModel().getValueAt(setarLinha, 2).toString());
 	}
 
-	private void btnBuscarFuncionario() {
+	private void buscarSalaNaTabela() {
+		String readTabela = "select tipoSala as Categorias, andarSala as Andar, numeroSala as Número from salas where tipoSala = ?;";
 
-		String readBtn = "select * from funcionario where idFuncionario = ?;";
+		try
+
+		{
+			// Estabelecer a conexão
+			Connection conexaoBanco = dao.conectar();
+
+			// Preparar a execução dos comandos SQL
+			PreparedStatement executarSQL = conexaoBanco.prepareStatement(readTabela);
+
+			// Substituir o ? pelo conteúdo da caixa de texto
+			executarSQL.setString(1, inputCategoria.getSelectedItem().toString());
+
+			// Executar o comando SQL
+
+			ResultSet resultadoExecucao = executarSQL.executeQuery();
+
+			// Exibir o resultado na tabela, utilização da bibliotece rs2xml para "popular"
+			// a tabela
+
+			tblSalas.setModel(DbUtils.resultSetToTableModel(resultadoExecucao));
+
+			conexaoBanco.close();
+		}
+
+		catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	
+	private void btnBuscarSala() {
+
+		String readBtn = "select * from salas where numeroSala = ?;";
 
 		try
 
@@ -252,7 +294,7 @@ public class Salas extends JDialog {
 			PreparedStatement executarSQL = conexaoBanco.prepareStatement(readBtn);
 
 			// Substituir o o ponto de interrogação pelo conteúdo da caixa de texto(nome)
-			executarSQL.setString(1, inputID.getText());
+			executarSQL.setString(1, inputNum.getText());
 
 			
 			
@@ -264,12 +306,13 @@ public class Salas extends JDialog {
 
 			if (resultadoExecucao.next()) {
 				// Preencher os campos do Formulario
-				inputLogin.setText(resultadoExecucao.getString(3));
-				inputSenha.setText(resultadoExecucao.getString(4));
-				inputPerfil.setSelectedItem(resultadoExecucao.getString(5));
+				inputAndar.setSelectedItem(resultadoExecucao.getString(2));
+				inputCod.setSelectedItem(resultadoExecucao.getString(5));
 				inputOcup.setText(resultadoExecucao.getString(6));
 
 			}
+			
+			conexaoBanco.close();
 		}
 
 		catch (Exception e) {
@@ -326,15 +369,13 @@ public class Salas extends JDialog {
 	
 	
 	private void limparCampos() {
-		inputNome.setText(null);
-		inputLogin.setText(null);
-		inputSenha.setText(null);
-		// inputPerfil.setSelectedItem(null);
-		inputPerfil.setSelectedIndex(-1);
+		inputCategoria.setSelectedIndex(-1);
+		inputCod.setSelectedIndex(-1);
+		inputAndar.setSelectedIndex(-1);
+		inputNum.setText(null);
 		inputOcup.setText(null);
-
-		inputNome.requestFocus();
-	} */
+		inputCategoria.requestFocus();
+	} 
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
